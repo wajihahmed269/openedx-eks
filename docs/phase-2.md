@@ -135,9 +135,110 @@ Expected result:
 - Request reaches the NGINX Ingress Controller.
 - NGINX routes the request to the `echo` Service and Pod.
 
+
+## Test App Validation Results
+
+The test app was applied from `k8s/phase-2/ingress-test.yaml` after ingress-nginx was already installed and verified.
+
+Applied manifest:
+
+```bash
+kubectl apply -f k8s/phase-2/ingress-test.yaml
+```
+
+Successful output:
+
+```text
+namespace/ingress-test created
+deployment.apps/echo created
+service/echo created
+ingress.networking.k8s.io/echo created
+```
+
+Pod verification:
+
+```bash
+kubectl get pods -n ingress-test
+```
+
+```text
+NAME                   READY   STATUS    RESTARTS   AGE
+echo-d986f4f64-q5xl6   1/1     Running   0          16s
+```
+
+Service verification:
+
+```bash
+kubectl get svc -n ingress-test
+```
+
+```text
+NAME   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+echo   ClusterIP   172.20.100.108   <none>        80/TCP    16s
+```
+
+Ingress verification:
+
+```bash
+kubectl get ingress -n ingress-test
+kubectl describe ingress echo -n ingress-test
+```
+
+Successful output included:
+
+```text
+NAME   CLASS   HOSTS   ADDRESS                                                                   PORTS   AGE
+echo   nginx   *       a76c0f39d49bb41a5826f7719c01d54a-1510598569.us-east-1.elb.amazonaws.com   80      16s
+```
+
+```text
+Rules:
+  Host        Path  Backends
+  ----        ----  --------
+  *
+              /   echo:80 (10.0.12.27:8080)
+```
+
+Ingress hostname:
+
+```bash
+kubectl get svc ingress-nginx-controller \
+  -n ingress-nginx \
+  -o jsonpath='{.status.loadBalancer.ingress[0].hostname}{"\n"}'
+```
+
+```text
+a76c0f39d49bb41a5826f7719c01d54a-1510598569.us-east-1.elb.amazonaws.com
+```
+
+External HTTP validation:
+
+```bash
+curl -i --max-time 20 http://a76c0f39d49bb41a5826f7719c01d54a-1510598569.us-east-1.elb.amazonaws.com/
+```
+
+Successful output included:
+
+```text
+HTTP/1.1 200 OK
+Content-Type: text/plain; charset=utf-8
+
+NOW: 2026-06-02 22:04:59.791949942 +0000 UTC m=+25.431493852
+```
+
+This confirms the response path:
+
+```text
+Internet
+  -> AWS ELB
+  -> ingress-nginx controller
+  -> ingress-test/echo ClusterIP Service
+  -> ingress-test/echo Pod
+```
+
 ## Rollback
 
-Rollback should remove test workloads first, then remove the ingress controller and its LoadBalancer service.
+For test-only rollback, remove only the dedicated test namespace. Do not uninstall ingress-nginx unless the full Phase 2 ingress controller must be removed.
 
 Remove the test Ingress and test app namespace:
 
@@ -146,30 +247,25 @@ kubectl delete ingress echo -n ingress-test --ignore-not-found
 kubectl delete namespace ingress-test --ignore-not-found
 ```
 
-Uninstall NGINX Ingress Controller:
+Verify test rollback:
 
 ```bash
-helm uninstall ingress-nginx -n ingress-nginx
-```
-
-Remove the controller namespace after the Helm release is gone:
-
-```bash
-kubectl delete namespace ingress-nginx --ignore-not-found
-```
-
-Verify rollback:
-
-```bash
-kubectl get namespace ingress-test ingress-nginx
-kubectl get svc -A | grep ingress-nginx
+kubectl get namespace ingress-test
+kubectl get ingress -A | grep ingress-test
 ```
 
 Expected result:
 
 - `ingress-test` namespace is gone.
-- `ingress-nginx` namespace is gone.
-- No `ingress-nginx-controller` Service remains.
+- No test Ingress remains.
+- ingress-nginx remains installed.
+
+Full ingress controller rollback, only if explicitly approved later:
+
+```bash
+helm uninstall ingress-nginx -n ingress-nginx
+kubectl delete namespace ingress-nginx --ignore-not-found
+```
 
 The Helm uninstall removes the controller Service, which should also remove the AWS Load Balancer created for that Service.
 
