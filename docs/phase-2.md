@@ -84,6 +84,8 @@ kubectl expose deployment echo \
 
 Create a test Ingress only after explicit approval.
 
+Planned command:
+
 ```bash
 kubectl apply -n ingress-test -f - <<'EOF'
 apiVersion: networking.k8s.io/v1
@@ -105,6 +107,13 @@ spec:
 EOF
 ```
 
+Verify the Ingress object:
+
+```bash
+kubectl get ingress -n ingress-test
+kubectl describe ingress echo -n ingress-test
+```
+
 ## Validate External Access
 
 After the LoadBalancer hostname is available:
@@ -114,8 +123,11 @@ INGRESS_HOST=$(kubectl get svc ingress-nginx-controller \
   -n ingress-nginx \
   -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 
+echo "${INGRESS_HOST}"
 curl -i "http://${INGRESS_HOST}/"
 ```
+
+If the hostname is empty, wait for AWS load balancer provisioning and rerun the hostname command.
 
 Expected result:
 
@@ -125,18 +137,39 @@ Expected result:
 
 ## Rollback
 
-Remove the test app resources:
+Rollback should remove test workloads first, then remove the ingress controller and its LoadBalancer service.
+
+Remove the test Ingress and test app namespace:
 
 ```bash
-kubectl delete namespace ingress-test
+kubectl delete ingress echo -n ingress-test --ignore-not-found
+kubectl delete namespace ingress-test --ignore-not-found
 ```
 
-Uninstall NGINX Ingress Controller and remove its namespace:
+Uninstall NGINX Ingress Controller:
 
 ```bash
 helm uninstall ingress-nginx -n ingress-nginx
-kubectl delete namespace ingress-nginx
 ```
+
+Remove the controller namespace after the Helm release is gone:
+
+```bash
+kubectl delete namespace ingress-nginx --ignore-not-found
+```
+
+Verify rollback:
+
+```bash
+kubectl get namespace ingress-test ingress-nginx
+kubectl get svc -A | grep ingress-nginx
+```
+
+Expected result:
+
+- `ingress-test` namespace is gone.
+- `ingress-nginx` namespace is gone.
+- No `ingress-nginx-controller` Service remains.
 
 The Helm uninstall removes the controller Service, which should also remove the AWS Load Balancer created for that Service.
 
