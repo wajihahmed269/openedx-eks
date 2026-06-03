@@ -25,6 +25,11 @@ variable "allowed_security_group_ids" {
   default     = []
 }
 
+variable "rds_security_group_id" {
+  description = "Security group ID that future RDS instances should attach to. This scaffold does not create an RDS instance yet."
+  type        = string
+}
+
 variable "engine" {
   description = "Database engine planned for Open edX."
   type        = string
