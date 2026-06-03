@@ -32,3 +32,9 @@ variable "private_subnet_cidrs" {
   description = "Private subnet CIDRs"
   type        = list(string)
 }
+
+variable "s3_enable_versioning" {
+  description = "Whether to enable versioning for the Open edX assets S3 bucket"
+  type        = bool
+  default     = false
+}

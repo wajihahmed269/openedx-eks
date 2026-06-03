@@ -1,14 +1,24 @@
-output "planned_bucket_name" {
-  description = "Planned S3 bucket name. No bucket is created by this scaffold."
-  value       = local.bucket_name
+output "bucket_name" {
+  description = "S3 bucket name."
+  value       = aws_s3_bucket.this.bucket
 }
 
-output "enable_versioning" {
-  description = "Future versioning setting."
+output "bucket_arn" {
+  description = "S3 bucket ARN."
+  value       = aws_s3_bucket.this.arn
+}
+
+output "bucket_region" {
+  description = "AWS region where the bucket is hosted."
+  value       = aws_s3_bucket.this.region
+}
+
+output "versioning_enabled" {
+  description = "Whether S3 bucket versioning is enabled."
   value       = var.enable_versioning
 }
 
 output "sse_algorithm" {
-  description = "Future server-side encryption algorithm."
+  description = "Server-side encryption algorithm configured for the bucket."
   value       = var.sse_algorithm
 }

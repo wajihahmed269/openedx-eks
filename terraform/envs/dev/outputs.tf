@@ -57,3 +57,19 @@ output "rds_database_name" {
 output "rds_credentials_secret_arn" {
   value = module.rds.credentials_secret_arn
 }
+
+output "s3_openedx_assets_bucket_name" {
+  value = module.s3_openedx_assets.bucket_name
+}
+
+output "s3_openedx_assets_bucket_arn" {
+  value = module.s3_openedx_assets.bucket_arn
+}
+
+output "s3_openedx_assets_bucket_region" {
+  value = module.s3_openedx_assets.bucket_region
+}
+
+output "s3_openedx_assets_versioning_enabled" {
+  value = module.s3_openedx_assets.versioning_enabled
+}

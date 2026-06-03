@@ -1,5 +1,8 @@
+data "aws_caller_identity" "current" {}
+
 locals {
-  name = "${var.project_name}-${var.environment}"
+  name           = "${var.project_name}-${var.environment}"
+  s3_bucket_name = lower("${var.project_name}-${var.environment}-openedx-assets-${data.aws_caller_identity.current.account_id}-${var.aws_region}")
 
   common_tags = {
     Project     = var.project_name
@@ -60,4 +63,15 @@ module "rds" {
   rds_security_group_id      = module.rds_security_group.security_group_id
   allowed_security_group_ids = [module.eks.cluster_security_group_id]
   tags                       = local.common_tags
+}
+
+module "s3_openedx_assets" {
+  source = "../../modules/s3"
+
+  name              = "openedx-assets"
+  name_prefix       = local.name
+  bucket_name       = local.s3_bucket_name
+  purpose           = "Open edX media/static/uploads"
+  enable_versioning = var.s3_enable_versioning
+  tags              = local.common_tags
 }

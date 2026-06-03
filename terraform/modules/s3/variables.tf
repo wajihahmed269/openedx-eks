@@ -14,20 +14,26 @@ variable "bucket_name" {
   default     = null
 }
 
+variable "purpose" {
+  description = "Human-readable purpose for the S3 bucket."
+  type        = string
+  default     = "Open edX media/static/uploads"
+}
+
 variable "enable_versioning" {
-  description = "Future versioning flag. Consider enabling for production or long-lived environments."
+  description = "Whether to enable S3 bucket versioning."
   type        = bool
   default     = false
 }
 
 variable "sse_algorithm" {
-  description = "Future server-side encryption algorithm."
+  description = "Server-side encryption algorithm for default bucket encryption."
   type        = string
   default     = "AES256"
 }
 
 variable "tags" {
-  description = "Tags for future S3 resources."
+  description = "Tags for S3 resources."
   type        = map(string)
   default     = {}
 }
