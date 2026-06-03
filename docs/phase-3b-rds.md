@@ -33,10 +33,12 @@ The dev defaults are intentionally small for cost control:
 - `instance_class = "db.t4g.micro"`
 - `allocated_storage_gb = 20`
 - `max_allocated_storage_gb = 100`
-- `backup_retention_period = 7`
+- `backup_retention_period = 1`
 - `deletion_protection = false`
 
 Deletion protection is disabled only because this is a dev assessment environment. Production should enable deletion protection and revisit snapshot settings.
+
+The initial apply failed with `FreeTierRestrictionError` because the AWS account's free-tier RDS path rejected a 7-day backup retention period. Dev now uses the lowest non-zero backup retention value, `1`, to keep backups enabled while satisfying the current account limitation. Production should increase retention after leaving free-tier constraints.
 
 ## Credentials
 

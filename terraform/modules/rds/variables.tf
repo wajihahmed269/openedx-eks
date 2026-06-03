@@ -91,9 +91,9 @@ variable "port" {
 }
 
 variable "backup_retention_period" {
-  description = "Backup retention period in days. Enabled for dev with a non-zero value."
+  description = "Backup retention period in days. Dev uses the lowest non-zero value for free-tier account compatibility."
   type        = number
-  default     = 7
+  default     = 1
 }
 
 variable "deletion_protection" {
