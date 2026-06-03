@@ -41,3 +41,19 @@ output "rds_security_group_id" {
 output "rds_db_subnet_group_name" {
   value = module.rds.db_subnet_group_name
 }
+
+output "rds_db_endpoint" {
+  value = module.rds.db_endpoint
+}
+
+output "rds_db_port" {
+  value = module.rds.db_port
+}
+
+output "rds_database_name" {
+  value = module.rds.database_name
+}
+
+output "rds_credentials_secret_arn" {
+  value = module.rds.credentials_secret_arn
+}

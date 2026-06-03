@@ -10,12 +10,12 @@ variable "name_prefix" {
 }
 
 variable "private_subnet_ids" {
-  description = "Private subnet IDs for the future DB subnet group. RDS must not use public subnets."
+  description = "Private subnet IDs for the DB subnet group. RDS must not use public subnets."
   type        = list(string)
 }
 
 variable "vpc_id" {
-  description = "VPC ID for future RDS networking and security group associations."
+  description = "VPC ID for RDS networking and security group associations."
   type        = string
 }
 
@@ -26,7 +26,7 @@ variable "allowed_security_group_ids" {
 }
 
 variable "rds_security_group_id" {
-  description = "Security group ID that future RDS instances should attach to. This scaffold does not create an RDS instance yet."
+  description = "Security group ID that RDS instances should attach to."
   type        = string
 }
 
@@ -37,37 +37,85 @@ variable "engine" {
 }
 
 variable "engine_version" {
-  description = "Future MySQL engine version. Set during implementation after compatibility review."
+  description = "MySQL engine version. Null lets AWS select the provider default for the engine family."
   type        = string
   default     = null
 }
 
 variable "instance_class" {
-  description = "Future dev-sized RDS instance class for cost control."
+  description = "Dev-sized RDS instance class for cost control."
   type        = string
-  default     = null
+  default     = "db.t4g.micro"
 }
 
 variable "allocated_storage_gb" {
-  description = "Future allocated storage in GiB."
+  description = "Allocated storage in GiB."
   type        = number
-  default     = null
+  default     = 20
+}
+
+variable "max_allocated_storage_gb" {
+  description = "Autoscaling storage upper bound in GiB. Set to 0 to disable storage autoscaling."
+  type        = number
+  default     = 100
+}
+
+variable "storage_type" {
+  description = "RDS storage type."
+  type        = string
+  default     = "gp3"
+}
+
+variable "database_name" {
+  description = "Initial database name for Open edX."
+  type        = string
+  default     = "openedx"
+}
+
+variable "master_username" {
+  description = "RDS master username. Password is generated and stored in Secrets Manager."
+  type        = string
+  default     = "openedx"
+}
+
+variable "master_password_length" {
+  description = "Length of generated RDS master password."
+  type        = number
+  default     = 32
+}
+
+variable "port" {
+  description = "MySQL port."
+  type        = number
+  default     = 3306
 }
 
 variable "backup_retention_period" {
-  description = "Future backup retention period in days."
+  description = "Backup retention period in days. Enabled for dev with a non-zero value."
   type        = number
   default     = 7
 }
 
 variable "deletion_protection" {
-  description = "Future deletion protection setting. Usually false for dev and true for production."
+  description = "Deletion protection setting. False for dev, usually true for production."
   type        = bool
   default     = false
 }
 
+variable "skip_final_snapshot" {
+  description = "Skip final snapshot on destroy. True for dev convenience; revisit for production."
+  type        = bool
+  default     = true
+}
+
+variable "secret_name" {
+  description = "Optional Secrets Manager secret name for DB credentials."
+  type        = string
+  default     = null
+}
+
 variable "tags" {
-  description = "Tags for future RDS resources."
+  description = "Tags for RDS resources."
   type        = map(string)
   default     = {}
 }
