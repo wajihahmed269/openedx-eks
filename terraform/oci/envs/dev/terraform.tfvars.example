@@ -1,0 +1,11 @@
+region              = "me-jeddah-1"
+compartment_ocid    = "ocid1.compartment.oc1..aaaaaaaauzww5eknxu6fecvdm632udxfj5uug26yih3mb6uzsxfdchefoh7q"
+oci_auth            = "SecurityToken"
+oci_config_file_profile = "DEFAULT"
+
+project_name = "openedx-oci"
+environment  = "dev"
+
+vcn_cidr             = "10.20.0.0/16"
+public_subnet_cidrs  = ["10.20.10.0/24"]
+private_subnet_cidrs = ["10.20.20.0/24"]
