@@ -29,6 +29,12 @@ variable "private_subnet_cidrs" {
   type        = list(string)
 }
 
+variable "kubernetes_api_allowed_cidrs" {
+  description = "CIDR blocks allowed to reach the public Kubernetes API endpoint on tcp/6443."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
 variable "freeform_tags" {
   description = "Freeform tags applied to OCI resources."
   type        = map(string)

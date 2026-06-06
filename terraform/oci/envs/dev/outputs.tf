@@ -27,3 +27,43 @@ output "nat_gateway_id" {
   description = "OCID of the NAT Gateway."
   value       = module.vcn.nat_gateway_id
 }
+
+output "oke_cluster_id" {
+  description = "OCID of the OKE cluster."
+  value       = module.oke.cluster_id
+}
+
+output "oke_cluster_name" {
+  description = "Name of the OKE cluster."
+  value       = module.oke.cluster_name
+}
+
+output "oke_cluster_type" {
+  description = "OKE cluster type."
+  value       = module.oke.cluster_type
+}
+
+output "oke_kubernetes_version" {
+  description = "Kubernetes version configured for OKE."
+  value       = module.oke.kubernetes_version
+}
+
+output "oke_node_pool_id" {
+  description = "OCID of the OKE node pool."
+  value       = module.oke.node_pool_id
+}
+
+output "oke_node_shape" {
+  description = "Configured OKE worker node shape."
+  value       = module.oke.node_shape
+}
+
+output "oke_node_pool_size" {
+  description = "Configured OKE worker node count."
+  value       = module.oke.node_pool_size
+}
+
+output "oke_kubeconfig_command" {
+  description = "OCI CLI command to write kubeconfig after the cluster exists."
+  value       = module.oke.kubeconfig_command
+}

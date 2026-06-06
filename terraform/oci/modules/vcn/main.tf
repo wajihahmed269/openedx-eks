@@ -78,6 +78,20 @@ resource "oci_core_security_list" "public" {
     }
   }
 
+  dynamic "ingress_security_rules" {
+    for_each = var.kubernetes_api_allowed_cidrs
+
+    content {
+      protocol = "6"
+      source   = ingress_security_rules.value
+
+      tcp_options {
+        min = 6443
+        max = 6443
+      }
+    }
+  }
+
   ingress_security_rules {
     protocol = "1"
     source   = var.vcn_cidr
