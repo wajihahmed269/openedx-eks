@@ -78,6 +78,44 @@ resource "oci_core_security_list" "public" {
     }
   }
 
+  ingress_security_rules {
+    protocol = "6"
+    source   = var.vcn_cidr
+
+    tcp_options {
+      min = 6443
+      max = 6443
+    }
+  }
+
+  dynamic "ingress_security_rules" {
+    for_each = var.private_subnet_cidrs
+
+    content {
+      protocol = "6"
+      source   = ingress_security_rules.value
+
+      tcp_options {
+        min = 12250
+        max = 12250
+      }
+    }
+  }
+
+  dynamic "ingress_security_rules" {
+    for_each = var.private_subnet_cidrs
+
+    content {
+      protocol = "1"
+      source   = ingress_security_rules.value
+
+      icmp_options {
+        type = 3
+        code = 4
+      }
+    }
+  }
+
   dynamic "ingress_security_rules" {
     for_each = var.kubernetes_api_allowed_cidrs
 
