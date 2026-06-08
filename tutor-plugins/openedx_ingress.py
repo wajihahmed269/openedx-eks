@@ -10,6 +10,36 @@ metadata:
   name: caddy
 spec:
   type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cms
+spec:
+  template:
+    spec:
+      containers:
+      - name: cms
+        resources:
+          requests:
+            memory: 512Mi
+          limits:
+            memory: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lms
+spec:
+  template:
+    spec:
+      containers:
+      - name: lms
+        resources:
+          requests:
+            memory: 512Mi
+          limits:
+            memory: 1Gi
 """
     )
 )
